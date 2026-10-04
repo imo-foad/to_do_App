@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do/controller/cubit/task_cubit.dart';
 import 'package:to_do/models/task_model.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,39 +32,47 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
-
       ),
-     body:BlocProvider(
-      create: (context) => TaskCubit(),
-      child:BlocBuilder<TaskCubit, TaskState>(
-        builder: (context, state) {
-          return Column(
-            children: [
-              TextField(
-                controller:controller,
-                decoration: InputDecoration(
-                  hintText: 'Add task',
+      body: BlocProvider(
+        create: (context) => TaskCubit(),
+        child: BlocBuilder<TaskCubit, TaskState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(hintText: 'Add task'),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: (){
-                  context.read()<TaskCubit>().addTask(TaskModel(
-                    id:1 as String,
-                    title: controller.text,
-                    isCompleted: false,
-                  ));
-                },
-                 child: Text('Add New Task'),
-              ),
-            ],
-          );
-        },
-      ),
-    ),
-    );
+                ElevatedButton(
+                  onPressed: () {
+                    if(controller.text.isEmpty) return;
+                    context.read<TaskCubit>().addTask(controller.text);
+                    controller.clear();
+                  },
+                  child: Text('Add New Task'),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.tasksList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(state.tasksList[index].title),
+                        leading: Checkbox(
+                          value:state.tasksList[index].isCompleted,
+                          onChanged:(value){}),
 
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 }

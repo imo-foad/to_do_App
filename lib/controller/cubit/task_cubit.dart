@@ -2,13 +2,16 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do/models/task_model.dart';
+import 'package:uuid/uuid.dart';
 
 part 'task_state.dart';
 
 class TaskCubit extends Cubit<TaskState> {
   TaskCubit() : super(TaskInitial());
 
-  addTask(TaskModel model) {
+  // ignore: strict_top_level_inference
+  addTask(String title) {
+    final model = TaskModel(id: Uuid().v4(), title: title, isCompleted: false);
     emit(UpdateTask(List.from(state.tasksList)..add(model)));
   }
 
