@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:to_do/controller/cubit/task_cubit.dart';
+import 'package:to_do/models/task_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,9 +23,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
   final String title;
+  final TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,33 @@ class MyHomePage extends StatelessWidget {
         title: Text(title),
 
       ),
-    body:Container(),
+     body:BlocProvider(
+      create: (context) => TaskCubit(),
+      child:BlocBuilder<TaskCubit, TaskState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              TextField(
+                controller:controller,
+                decoration: InputDecoration(
+                  hintText: 'Add task',
+                ),
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  context.read()<TaskCubit>().addTask(TaskModel(
+                    id:1 as String,
+                    title: controller.text,
+                    isCompleted: false,
+                  ));
+                },
+                 child: Text('Add New Task'),
+              ),
+            ],
+          );
+        },
+      ),
+    ),
     );
 
   }
